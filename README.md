@@ -42,7 +42,7 @@ bundle install
 |_____|__  _|_____|_|   |__|__|___|_|_|_| |___|_|
          |__|
 
-          sqlmap api wrapper by ztz
+      sqlmap api wrapper by ztz (ztz@ztz.me)
 
 Usage: sqli-hunter.rb [options]
 
@@ -53,7 +53,6 @@ Common options:
         --version                    Show version
 
 sqlmap options
-        --random-agent               Use randomly selected HTTP User-Agent header value
         --technique=<TECH>           SQL injection techniques to use (default "BEUSTQ")
         --threads=<THREADS>          Max number of concurrent HTTP(s) requests (default 10)
         --dbms=<DBMS>                Force back-end DBMS to this value
@@ -80,7 +79,7 @@ ruby sqli-hunter.rb -s -p 8888
 configure proxy server settings in your browser
 
 ```
-➜  sqli-hunter git:(master)  ruby sqli-hunter.rb -s --smart
+➜  sqli-hunter git:(master)  ruby sqli-hunter.rb -s --dbms=mysql
 
  _____ _____ __    _     _____         _
 |   __|     |  |  |_|___|  |  |_ _ ___| |_ ___ ___
@@ -91,14 +90,13 @@ configure proxy server settings in your browser
           sqlmap api wrapper by ztz
 
 [*] Proxy server started... listening on port 8080
-[+] Vulnerable: ef412a4bb8a1ed14 requestFile: /tmp/b6a2ac492360ed63de4fbf643839ee4f
-[-] 066816d40bd9fcd4: all tested parameters appear to be not injectable
-[-] f1420b0f28bcb42f: all tested parameters appear to be not injectable
-[+] Vulnerable: 87f339ddf519b082 requestFile: /tmp/d671f7ee08d200a347a52cecf5129b86
+[-] 999058ea998684e5: all tested parameters appear to be not injectable
+[-] 0389cb1c7af78d52: all tested parameters appear to be not injectable
+[+] Vulnerable: 5fa7bb8ede704b4f requestFile: /tmp/0a5a71c5d6bfc1779fb4e678c869f350
 ```
 
 start sqlmap to exploit it
 
 ```
-python sqlmap.py -r /tmp/d671f7ee08d200a347a52cecf5129b86
+python sqlmap.py -r /tmp/0a5a71c5d6bfc1779fb4e678c869f350
 ```

@@ -10,7 +10,6 @@ module Hunter
 
       # SQLmap options
       @sqlmap_options = OpenStruct.new
-      @sqlmap_options.randomAgent = false
       @sqlmap_options.threads = 10
       @sqlmap_options.smart = false
       @sqlmap_options.tech = 'BEUSTQ'
@@ -23,7 +22,7 @@ module Hunter
 |_____|__  _|_____|_|   |__|__|___|_|_|_| |___|_|
          |__|
 
-          sqlmap api wrapper by ztz
+      sqlmap api wrapper by ztz (ztz@ztz.me)
 
 EOT
       usage = "Usage: #{$0} [options]"
@@ -51,10 +50,6 @@ EOT
 
         opts.separator ''
         opts.separator 'sqlmap options'
-
-        opts.on('--random-agent', 'Use randomly selected HTTP User-Agent header value') do
-          @sqlmap_options.randomAgent = true
-        end
 
         opts.on('--technique=<TECH>', 'SQL injection techniques to use (default "BEUSTQ")') do |tech|
           @sqlmap_options.tech = tech
