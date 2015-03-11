@@ -87,7 +87,7 @@ configure proxy server settings in your browser
 |_____|__  _|_____|_|   |__|__|___|_|_|_| |___|_|
          |__|
 
-          sqlmap api wrapper by ztz
+          sqlmap api wrapper by ztz (ztz@ztz.me)
 
 [*] Proxy server started... listening on port 8080
 [-] 999058ea998684e5: all tested parameters appear to be not injectable
