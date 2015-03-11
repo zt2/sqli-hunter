@@ -10,11 +10,12 @@ module Hunter
 
       # SQLmap options
       @sqlmap_options = OpenStruct.new
-      @sqlmap_options.random_agent = false
+      @sqlmap_options.randomAgent = false
       @sqlmap_options.threads = 10
       @sqlmap_options.smart = false
+      @sqlmap_options.tech = 'BEUSTQ'
 
-      banner =<<EOT
+      @banner =<<EOT
 
  _____ _____ __    _     _____         _
 |   __|     |  |  |_|___|  |  |_ _ ___| |_ ___ ___
@@ -22,11 +23,12 @@ module Hunter
 |_____|__  _|_____|_|   |__|__|___|_|_|_| |___|_|
          |__|
 
+          sqlmap api wrapper by ztz
 
 EOT
       usage = "Usage: #{$0} [options]"
       OptionParser.new do |opts|
-        opts.banner = banner + usage
+        opts.banner = @banner + usage
 
         opts.separator ''
         opts.separator 'Common options:'
@@ -48,10 +50,14 @@ EOT
         end
 
         opts.separator ''
-        opts.separator 'SQLMap options'
+        opts.separator 'sqlmap options'
 
         opts.on('--random-agent', 'Use randomly selected HTTP User-Agent header value') do
-          @sqlmap_options.random_agent = true
+          @sqlmap_options.randomAgent = true
+        end
+
+        opts.on('--technique=<TECH>', 'SQL injection techniques to use (default "BEUSTQ")') do |tech|
+          @sqlmap_options.tech = tech
         end
 
         opts.on('--threads=<THREADS>', OptionParser::DecimalInteger, 'Max number of concurrent HTTP(s) requests (default 10)') do |threads|
@@ -78,10 +84,6 @@ EOT
           @sqlmap_options.risk = risk
         end
 
-        opts.on('--batch', 'Never ask for user input, use the default behaviour') do |batch|
-          @sqlmap_options.batch = batch
-        end
-
         opts.on('--mobile', 'Imitate smartphone through HTTP User-Agent header') do |mobile|
           @sqlmap_options.mobile = mobile
         end
@@ -105,6 +107,8 @@ EOT
     end
 
     def start
+      puts @banner
+
       if @common_options.as_proxy_server
         captor = Hunter::Captor.new(port: @common_options.proxy_port)
         @threads << Thread.new {
@@ -121,7 +125,6 @@ EOT
 
           # Recv a request data (save path)
           save_path = Hunter::REQUESTS.pop
-
 
           # Create a new task
           task = Hunter::Task.new(@common_options.api_host)
