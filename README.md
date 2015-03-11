@@ -53,7 +53,6 @@ Common options:
         --version                    Show version
 
 sqlmap options
-        --beep                       Make a beep sound when SQL injection is found
         --random-agent               Use randomly selected HTTP User-Agent header value
         --technique=<TECH>           SQL injection techniques to use (default "BEUSTQ")
         --threads=<THREADS>          Max number of concurrent HTTP(s) requests (default 10)
