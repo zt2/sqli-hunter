@@ -2,8 +2,9 @@ module Hunter
   class Task
     attr_reader :task_id
 
-    def initialize(host)
+    def initialize(host, save_path)
       @host = host
+      @save_path = save_path
       @headers = {
           'Content-Type' => 'application/json'
       }
@@ -102,6 +103,10 @@ module Hunter
 
     def vulnerable?
       self.scan_data.empty? ? false : true
+    end
+
+    def delete_file
+      File.delete @save_path unless vulnerable?
     end
   end
 end

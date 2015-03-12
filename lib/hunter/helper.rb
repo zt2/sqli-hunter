@@ -10,7 +10,7 @@ module Hunter
 
       # SQLmap options
       @sqlmap_options = OpenStruct.new
-      @sqlmap_options.threads = 10
+      @sqlmap_options.threads = 5
       @sqlmap_options.smart = false
       @sqlmap_options.tech = 'BEUSTQ'
 
@@ -55,7 +55,7 @@ EOT
           @sqlmap_options.tech = tech
         end
 
-        opts.on('--threads=<THREADS>', OptionParser::DecimalInteger, 'Max number of concurrent HTTP(s) requests (default 10)') do |threads|
+        opts.on('--threads=<THREADS>', OptionParser::DecimalInteger, 'Max number of concurrent HTTP(s) requests (default 5)') do |threads|
           @sqlmap_options.threads = threads
         end
 
@@ -89,15 +89,13 @@ EOT
       end.parse!
 
       trap 'INT'  do
-        @threads.each do |thr|
-          thr.kill
-        end
+        Hunter::TASKS.each { |task| task.delete_file }
+        @threads.each { |thr| thr.kill }
       end
 
       trap 'TERM' do
-        @threads.each do |thr|
-          thr.kill
-        end
+        Hunter::TASKS.each { |task| task.delete_file }
+        @threads.each { |thr| thr.kill }
       end
     end
 
@@ -122,10 +120,10 @@ EOT
           save_path = Hunter::REQUESTS.pop
 
           # Create a new task
-          task = Hunter::Task.new(@common_options.api_host)
+          task = Hunter::Task.new(@common_options.api_host, save_path)
 
           unless task.task_id
-            puts '[SQLMap Client] Error to create Task, retry after 5s'
+            puts "[SQLMap Client] Create task error: #{save_path}, retry after 5s"
             Hunter::REQUESTS << save_path
             sleep(5)
             next
@@ -134,18 +132,18 @@ EOT
           # Set option
           @sqlmap_options.requestFile = save_path
           unless task.option_set(@sqlmap_options.to_h)
-            puts '[SQLMap Client] Error to set option, retry after 5s'
+            puts "[SQLMap Client] Set option error: #{task.task_id}, retry after 5s"
             Hunter::REQUESTS << save_path
-            task.delete(task)
+            task.delete
             sleep(5)
             next
           end
 
           # Run task
           unless task.scan_start
-            puts '[SQLMap Client] Start scan error, retry after 5s'
+            puts "[SQLMap Client] Start scan error: #{task.task_id}, retry after 5s"
             Hunter::REQUESTS << save_path
-            task.delete(task)
+            task.delete
             sleep(5)
             next
           end
@@ -181,6 +179,7 @@ EOT
           Hunter::MUTEX.synchronize {
             delete_task.each do |task|
               task.delete
+              task.delete_file
               Hunter::TASKS.delete task
             end
           }

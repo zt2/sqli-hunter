@@ -1,1 +1,2 @@
 gem 'typhoeus'
+gem 'addressable'

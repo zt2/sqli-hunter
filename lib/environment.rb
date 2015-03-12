@@ -7,6 +7,7 @@ require 'webrick'
 require 'webrick/httpproxy'
 
 require 'typhoeus'
+require 'addressable/uri'
 
 require 'lib/hunter'
 require 'lib/hunter/captor'
