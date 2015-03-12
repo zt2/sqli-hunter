@@ -34,7 +34,7 @@ bundle install
 ---
 
 ```
-➜  sqli-hunter git:(master)  ruby sqli-hunter.rb
+➜  sqli-hunter git:(master) ./sqli-hunter.rb 
 
  _____ _____ __    _     _____         _
 |   __|     |  |  |_|___|  |  |_ _ ___| |_ ___ ___
@@ -44,7 +44,7 @@ bundle install
 
       sqlmap api wrapper by ztz (ztz@ztz.me)
 
-Usage: sqli-hunter.rb [options]
+Usage: ./sqli-hunter.rb [options]
 
 Common options:
     -s, --server                     Act as a Proxy-Server
@@ -54,7 +54,7 @@ Common options:
 
 sqlmap options
         --technique=<TECH>           SQL injection techniques to use (default "BEUSTQ")
-        --threads=<THREADS>          Max number of concurrent HTTP(s) requests (default 10)
+        --threads=<THREADS>          Max number of concurrent HTTP(s) requests (default 5)
         --dbms=<DBMS>                Force back-end DBMS to this value
         --os=<OS>                    Force back-end DBMS operating system to this value
         --tamper=<TAMPER>            Use given script(s) for tampering injection data
