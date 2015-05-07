@@ -51,7 +51,7 @@ EOT
         end
 
         opts.on('--version', 'Show version') do
-          puts "SQLi-Hunter version: '#{@version}'"
+          puts "SQLi-Hunter version: '#{@@version}'"
           exit
         end
 
