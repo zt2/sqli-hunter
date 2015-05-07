@@ -1,12 +1,15 @@
 module Hunter
-  class Helper
+  class Helper < Hunter::Common
     def initialize
+      super
       @threads = []
 
       # Common options
       @common_options = OpenStruct.new
-      @common_options.proxy_port = 8080
+      @common_options.proxy_port = 8888
       @common_options.api_host = 'localhost:8775'
+      @common_options.verbose = 1
+      @common_options.save_path = '/tmp'
 
       # SQLmap options
       @sqlmap_options = OpenStruct.new
@@ -14,7 +17,7 @@ module Hunter
       @sqlmap_options.smart = false
       @sqlmap_options.tech = 'BEUSTQ'
 
-      @banner =<<EOT
+      @banner = <<EOT
 
  _____ _____ __    _     _____         _
 |   __|     |  |  |_|___|  |  |_ _ ___| |_ ___ ___
@@ -25,16 +28,12 @@ module Hunter
       sqlmap api wrapper by ztz (ztz@ztz.me)
 
 EOT
-      usage = "Usage: #{$0} [options]"
+      usage = "Usage: #{$PROGRAM_NAME} [options]"
       OptionParser.new do |opts|
         opts.banner = @banner + usage
 
         opts.separator ''
         opts.separator 'Common options:'
-        opts.on('-s', '--server', 'Act as a Proxy-Server') do
-          @common_options.as_proxy_server = true
-        end
-
         opts.on('-p <PORT>', '--port=<PORT>', OptionParser::DecimalInteger, 'Port of the Proxy-Server (default is 8888)') do |port|
           @common_options.proxy_port = port
         end
@@ -43,8 +42,16 @@ EOT
           @common_options.api_host = host
         end
 
+        opts.on('-s <SAVE PATH>', '--save=<SAVE PATH>', String, 'Specify the path for request files (default is /tmp)') do |save_path|
+          @common_options.save_path = save_path
+        end
+
+        opts.on('-v <VERBOSE>', 'Verbosity level: 0-3 (default 1)', OptionParser::DecimalInteger) do |verbose|
+          @common_options.verbose = verbose
+        end
+
         opts.on('--version', 'Show version') do
-          puts "SQLi-Hunter version: '#{Hunter::VERSION}'"
+          puts "SQLi-Hunter version: '#{@version}'"
           exit
         end
 
@@ -88,105 +95,114 @@ EOT
         end
       end.parse!
 
-      trap 'INT'  do
-        Hunter::TASKS.each { |task| task.delete_file }
-        @threads.each { |thr| thr.kill }
+      trap 'INT' do
+        @@task_queue.each(&:delete_file)
+        @threads.each(&:kill)
       end
 
       trap 'TERM' do
-        Hunter::TASKS.each { |task| task.delete_file }
-        @threads.each { |thr| thr.kill }
+        @@task_queue.each(&:delete_file)
+        @threads.each(&:kill)
       end
+
+      @@verbose = @common_options.verbose
     end
 
     def start
       puts @banner
 
-      if @common_options.as_proxy_server
-        captor = Hunter::Captor.new(port: @common_options.proxy_port)
-        @threads << Thread.new {
-          captor.start
-        }
+      @threads << Thread.new do
+        captor = Hunter::Captor.new(port: @common_options.proxy_port, save_path: @common_options.save_path)
+        captor.start
       end
 
-      @threads << Thread.new {
-        while true
-          if Hunter::REQUESTS.empty?
-            Thread.pass
-            next
-          end
-
-          # Recv a request data (save path)
-          save_path = Hunter::REQUESTS.pop
-
-          # Create a new task
-          task = Hunter::Task.new(@common_options.api_host, save_path)
-
-          unless task.task_id
-            puts "[SQLMap Client] Create task error: #{save_path}, retry after 5s"
-            Hunter::REQUESTS << save_path
-            sleep(5)
-            next
-          end
-
-          # Set option
-          @sqlmap_options.requestFile = save_path
-          unless task.option_set(@sqlmap_options.to_h)
-            puts "[SQLMap Client] Set option error: #{task.task_id}, retry after 5s"
-            Hunter::REQUESTS << save_path
-            task.delete
-            sleep(5)
-            next
-          end
-
-          # Run task
-          unless task.scan_start
-            puts "[SQLMap Client] Start scan error: #{task.task_id}, retry after 5s"
-            Hunter::REQUESTS << save_path
-            task.delete
-            sleep(5)
-            next
-          end
-
-          Hunter::MUTEX.synchronize {
-            Hunter::TASKS << task
-          }
-        end
-      }
-
-      @threads << Thread.new {
-        while true
-          delete_task = []
-          if Hunter::TASKS.empty?
+      @threads << Thread.new do
+        loop do
+          if @@request_queue.empty?
             Thread.pass
             sleep(3)
             next
           end
 
-          Hunter::TASKS.each do |task|
-            next unless task.terminal?
+          # Recv a request data (save path)
+          save_path = @@request_queue.pop
+
+          # Create a new task
+          task = Hunter::Task.new(@common_options.api_host, save_path)
+
+          unless task.task_id
+            print_msg("[#{Time.now.strftime('%T')}] Create task error: #{save_path}, retry after 5s", :critical, 0)
+            @@request_queue << save_path
+            sleep(5)
+            next
+          end
+          print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] Create task", :notice, 1)
+
+          # Set option
+          @sqlmap_options.requestFile = save_path
+          unless task.option_set(@sqlmap_options.to_h)
+            print_msg("[#{Time.now.strftime('%T')}] Set options error: #{task.task_id}, retry after 5s", :critical, 0)
+            @@request_queue << save_path
+            task.delete
+            sleep(5)
+            next
+          end
+          print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] Set options success", :notice, 1)
+
+          # Run task
+          unless task.scan_start
+            print_msg("[#{Time.now.strftime('%T')}] Start scan error: #{task.task_id}, retry after 5s", :critical, 0)
+            @@request_queue << save_path
+            task.delete
+            sleep(5)
+            next
+          end
+          print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] Task running", :notice, 1)
+
+          @@mutex.synchronize do
+            @@task_queue << task
+          end
+        end
+      end
+
+      @threads << Thread.new do
+        loop do
+          delete_task = []
+          if @@task_queue.empty?
+            Thread.pass
+            sleep(3)
+            next
+          end
+
+          @@task_queue.each do |task|
+            print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] Fetching result", :notice, 2)
+            unless task.terminal?
+              print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] no result, waiting", :notice, 2)
+              sleep(5)
+              next
+            end
 
             if task.vulnerable?
               delete_task << task
               request_file = task.option_get('requestFile')
-              puts Hunter.info("[+] Vulnerable: #{task.task_id} requestFile: #{request_file}")
+              print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] Task vulnerable, use \"sqlmap -r #{request_file}\" to exploit", :info, 0)
             else
               delete_task << task
-              puts Hunter.warning("[-] #{task.task_id}: all tested parameters appear to be not injectable")
+              print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] All tested parameters appear to be not injectable", :warning, 0)
             end
           end
 
-          Hunter::MUTEX.synchronize {
+          @@mutex.synchronize do
             delete_task.each do |task|
-              task.delete
               task.delete_file
-              Hunter::TASKS.delete task
+              task.delete
+              @@task_queue.delete task
             end
-          }
+          end
         end
-      }
+      end
 
-      @threads.each { |thr| thr.join }
+      @threads.each(&:join)
     end
   end
 end

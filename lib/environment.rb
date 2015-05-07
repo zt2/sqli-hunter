@@ -9,7 +9,7 @@ require 'webrick/httpproxy'
 require 'typhoeus'
 require 'addressable/uri'
 
-require 'lib/hunter'
+require 'lib/common'
 require 'lib/hunter/captor'
 require 'lib/hunter/helper'
 require 'lib/hunter/task'

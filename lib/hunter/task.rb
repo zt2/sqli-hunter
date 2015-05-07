@@ -1,19 +1,17 @@
 module Hunter
-  class Task
+  class Task < Hunter::Common
     attr_reader :task_id
 
     def initialize(host, save_path)
       @host = host
       @save_path = save_path
       @headers = {
-          'Content-Type' => 'application/json'
+        'Content-Type' => 'application/json'
       }
 
       path = '/task/new'
       res = Typhoeus.get(@host + path)
-      if res.timed_out?
-        @task_id = nil
-      end
+      @task_id = nil if res.timed_out?
 
       result = JSON.load(res.body)
       @task_id = result['success'] ? result['taskid'] : nil
@@ -39,7 +37,7 @@ module Hunter
     def option_get(option)
       path = "/option/#{@task_id}/get"
       options = {
-          option: option
+        option: option
       }
       res = Typhoeus.post(@host + path, headers: @headers, body: JSON.dump(options))
 
@@ -98,11 +96,11 @@ module Hunter
     end
 
     def terminal?
-      self.scan_status.eql? 'terminated'
+      scan_status.eql? 'terminated'
     end
 
     def vulnerable?
-      self.scan_data.empty? ? false : true
+      scan_data.empty? ? false : true
     end
 
     def delete_file
