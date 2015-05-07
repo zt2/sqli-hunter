@@ -1,40 +1,27 @@
 # SQLi-Hunter
-===
 
 SQLi-Hunter is a simple HTTP proxy server and a sqlmap api wrapper that makes dig SQLi easily.
 
-## Requirement
----
+## 0x0 Requirement
 
-```
-Ruby > 2.0.0
-sqlmap
-```
+- Ruby: > 2.0.0
+- sqlmap
 
-## Installation
----
 
-install `sqlmap`
+## 0x1 Installation
 
 ```
 git clone https://github.com/sqlmapproject/sqlmap.git
-```
-
-clone this project
-
-install gems
-
-```
+git clone https://github.com/zt2/sqli-hunter.git
 cd sqli-hunter
 gem install bundle
 bundle install
 ```
 
-## Usage
----
+## 0x2 Usage
 
 ```
-➜  sqli-hunter git:(master) ./sqli-hunter.rb 
+➜  sqli-hunter git:(master) ruby sqli-hunter.rb 
 
  _____ _____ __    _     _____         _
 |   __|     |  |  |_|___|  |  |_ _ ___| |_ ___ ___
@@ -44,12 +31,13 @@ bundle install
 
       sqlmap api wrapper by ztz (ztz@ztz.me)
 
-Usage: ./sqli-hunter.rb [options]
+Usage: sqli-hunter.rb [options]
 
 Common options:
-    -s, --server                     Act as a Proxy-Server
     -p, --port=<PORT>                Port of the Proxy-Server (default is 8888)
         --api-host=<HOST>            Host of the sqlmapapi (default is localhost:8775)
+    -s, --save=<SAVE PATH>           Specify the path for request files (default is /tmp)
+    -v <VERBOSE>                     Verbosity level: 0-3 (default 1)
         --version                    Show version
 
 sqlmap options
@@ -73,13 +61,13 @@ python sqlmapapi.py -s
 start sqli-hunter proxy server
 
 ```
-ruby sqli-hunter.rb -s -p 8888
+ruby sqli-hunter.rb -p 8888
 ```
 
 configure proxy server settings in your browser
 
 ```
-➜  sqli-hunter git:(master)  ruby sqli-hunter.rb -s --dbms=mysql
+➜  sqli-hunter git:(master) ruby sqli-hunter.rb -v 2 --dbms=mysql --threads=10 
 
  _____ _____ __    _     _____         _
 |   __|     |  |  |_|___|  |  |_ _ ___| |_ ___ ___
@@ -87,16 +75,24 @@ configure proxy server settings in your browser
 |_____|__  _|_____|_|   |__|__|___|_|_|_| |___|_|
          |__|
 
-          sqlmap api wrapper by ztz (ztz@ztz.me)
+      sqlmap api wrapper by ztz (ztz@ztz.me)
 
-[*] Proxy server started... listening on port 8080
-[-] 999058ea998684e5: all tested parameters appear to be not injectable
-[-] 0389cb1c7af78d52: all tested parameters appear to be not injectable
-[+] Vulnerable: 5fa7bb8ede704b4f requestFile: /tmp/0a5a71c5d6bfc1779fb4e678c869f350
+[00:59:18] Proxy server started... listening on port 8888
+[00:59:23] POST http://testphp.vulnweb.com/search.php?test=query HTTP/1.1
+[00:59:23] Saving to /private/tmp/96c915d5fe6becf373e2095cfa2da458
+[00:59:24] [0d8f471e77a3bd65] Create task
+[00:59:24] [0d8f471e77a3bd65] Set options success
+[00:59:24] [0d8f471e77a3bd65] Task running
+[00:59:27] [0d8f471e77a3bd65] Fetching result
+[00:59:27] [0d8f471e77a3bd65] Task vulnerable, use "sqlmap -r /private/tmp/96c915d5fe6becf373e2095cfa2da458" to exploit
+[00:59:33] GET http://testphp.vulnweb.com/artists.php HTTP/1.1
+[00:59:33] Saving to /private/tmp/1a5669ae3c25b5b952b2667f11d9becc
+[00:59:33] [bf9b7e10f9d04559] Create task
+[00:59:33] [bf9b7e10f9d04559] Set options success
+[00:59:33] [bf9b7e10f9d04559] Task running
+[00:59:36] [bf9b7e10f9d04559] Fetching result
+[00:59:36] [bf9b7e10f9d04559] All tested parameters appear to be not injectable
+
 ```
 
-start sqlmap to exploit it
-
-```
-python sqlmap.py -r /tmp/0a5a71c5d6bfc1779fb4e678c869f350
-```
+use `sqlmap -r /private/tmp/96c915d5fe6becf373e2095cfa2da458` to exploit
