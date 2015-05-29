@@ -1,7 +1,8 @@
 module Hunter
   class Captor < Hunter::Common
-    def initialize(port: 8888, save_path: '/tmp')
+    def initialize(port: 8888, save_path: '/tmp', included_host: 'ALL')
       super()
+      @included_host = included_host
       @save_path = File.realpath(save_path)
       @filter_file = %w(.css .js .jpg .jpeg .gif .png .bmp .html .htm .swf)
       @filter_code = [/4\d{2}/]
@@ -32,6 +33,9 @@ module Hunter
       print_msg("[#{Time.now.strftime('%T')}] Response:\r\n#{raw_res}", :notice, 3)
 
       uri = Addressable::URI.parse(req.request_uri)
+
+      return if @included_host != 'ALL' && !host_match?(uri.host)
+
       @filter_file.each do |static_file|
         return if uri.extname.downcase.eql? static_file
       end
@@ -48,10 +52,14 @@ module Hunter
       @@mutex.synchronize do
         @@request_queue << save_path
       end
-          end
+    end
 
     def start
       @proxy.start
+    end
+
+    def host_match?(host)
+      host.include?(@included_host) ? true : false
     end
   end
 end

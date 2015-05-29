@@ -10,6 +10,7 @@ module Hunter
       @common_options.api_host = 'localhost:8775'
       @common_options.verbose = 1
       @common_options.save_path = '/tmp'
+      @common_options.includede_host = 'ALL'
 
       # SQLmap options
       @sqlmap_options = OpenStruct.new
@@ -44,6 +45,10 @@ EOT
 
         opts.on('-s <SAVE PATH>', '--save=<SAVE PATH>', String, 'Specify the path for request files (default is /tmp)') do |save_path|
           @common_options.save_path = save_path
+        end
+
+        opts.on('--included-host=<HOST>', String, 'Specify the host you want to check (default is ALL)') do |host|
+          @common_options.included_host = host
         end
 
         opts.on('-v <VERBOSE>', 'Verbosity level: 0-3 (default 1)', OptionParser::DecimalInteger) do |verbose|
@@ -112,7 +117,11 @@ EOT
       puts @banner
 
       @threads << Thread.new do
-        captor = Hunter::Captor.new(port: @common_options.proxy_port, save_path: @common_options.save_path)
+        captor = Hunter::Captor.new(
+            port: @common_options.proxy_port,
+            save_path: @common_options.save_path,
+            included_host: @common_options.included_host
+        )
         captor.start
       end
 
