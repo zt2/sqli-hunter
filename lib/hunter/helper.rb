@@ -10,7 +10,7 @@ module Hunter
       @common_options.api_host = 'localhost:8775'
       @common_options.verbose = 1
       @common_options.save_path = '/tmp'
-      @common_options.includede_host = 'ALL'
+      @common_options.included_host = 'ALL'
 
       # SQLmap options
       @sqlmap_options = OpenStruct.new
