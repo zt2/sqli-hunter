@@ -1,4 +1,6 @@
 # SQLi-Hunter
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fzt2%2Fsqli-hunter.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fzt2%2Fsqli-hunter?ref=badge_shield)
+
 
 SQLi-Hunter is a simple HTTP proxy server and a sqlmap api wrapper that makes dig SQLi easily.
 
@@ -96,3 +98,7 @@ configure proxy server settings in your browser
 ```
 
 use `sqlmap -r /private/tmp/96c915d5fe6becf373e2095cfa2da458` to exploit
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fzt2%2Fsqli-hunter.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fzt2%2Fsqli-hunter?ref=badge_large)
