@@ -33,6 +33,7 @@ module Hunter
       print_msg("[#{Time.now.strftime('%T')}] Response:\r\n#{raw_res}", :notice, 3)
 
       uri = Addressable::URI.parse(req.request_uri)
+      return if uri.nil?
 
       return if @included_host != 'ALL' && !host_match?(uri.host)
 
