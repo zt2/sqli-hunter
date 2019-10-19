@@ -36,13 +36,11 @@ module Hunter
 
     def option_get(option)
       path = "/option/#{@task_id}/get"
-      options = {
-        option: option
-      }
+      options = [option]
       res = Typhoeus.post(@host + path, headers: @headers, body: JSON.dump(options))
 
       result = JSON.load(res.body)
-      result['success'] ? result[option] : false
+      result['success'] ? result['options'][option] : nil
     end
 
     def option_set(options)

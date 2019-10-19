@@ -194,7 +194,11 @@ EOT
             if task.vulnerable?
               delete_task << task
               request_file = task.option_get('requestFile')
-              print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] Task vulnerable, use \"sqlmap -r #{request_file}\" to exploit", :info, 0)
+              if request_file.nil?
+                print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] Unexpected exception, retrieve requestFile option error", :critical, 0)
+              else
+                print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] Task vulnerable, use \"sqlmap -r #{request_file}\" to exploit", :info, 0)
+              end
             else
               delete_task << task
               print_msg("[#{Time.now.strftime('%T')}] [#{task.task_id}] All tested parameters appear to be not injectable", :warning, 0)
