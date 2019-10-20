@@ -42,10 +42,10 @@ module Hunter
     # Start monitor
     #
     def start
-      @server.start
-
-      bind_addr = "#{@server.config['BindAddress']}:#{@server.config['Port']}"
+      bind_addr = "#{@server.config[:BindAddress]}:#{@server.config[:Port]}"
       Hunter::Logger.info("proxy server started ... listening on #{bind_addr}")
+
+      @server.start
     rescue StandardError => e
       Hunter::Logger.error(e.message)
     end
