@@ -9,7 +9,7 @@ module Hunter
   #
 
   # Version
-  VERSION = '1.1.0'
+  VERSION = '1.1.1'
 
   require_relative 'hunter/logger'
   require_relative 'hunter/proxy'
