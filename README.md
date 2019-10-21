@@ -1,11 +1,10 @@
 # SQLi-Hunter
 
-SQLi-Hunter is a simple HTTP proxy server and a sqlmap api wrapper that makes dig SQLi easily.
+SQLi-Hunter is a simple HTTP proxy server and a SQLMAP API wrapper that makes digging SQLi easy.
 
 ## 0x0 Requirement
 
 - Ruby
-- SQLMAP
 
 ## 0x1 Installation
 
