@@ -43,7 +43,7 @@ module Hunter
       #
       # @param msg [String] Message
       def succ(msg)
-        Formatador.display_line("[green][#{Time.now.strftime('%T')}][SUCCESS] #{msg}[/]")
+        Formatador.display_line("[green][#{Time.now.strftime('%T')}] [SUCCESS] #{msg}[/]")
       end
     end
   end
