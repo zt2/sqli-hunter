@@ -43,7 +43,7 @@ module Hunter
     #
     def start
       bind_addr = "#{@server.config[:BindAddress]}:#{@server.config[:Port]}"
-      Hunter::Logger.info("proxy server started ... listening on #{bind_addr}")
+      Hunter::Logger.info("Proxy server started ... listening on #{bind_addr}")
 
       @server.start
     rescue StandardError => e
@@ -53,10 +53,10 @@ module Hunter
     # Shutdown server
     #
     def shutdown
-      Hunter::Logger.info('stopping proxy server')
+      Hunter::Logger.info('Stopping proxy server')
       @server.shutdown
-      Hunter::Logger.info('proxy server stopped')
-      Hunter::Logger.info("waiting for #{@threads.size} tasks ...")
+      Hunter::Logger.info('Proxy server stopped')
+      Hunter::Logger.info("Waiting for #{@threads.size} tasks ...")
       @threads.each(&:join)
     end
 

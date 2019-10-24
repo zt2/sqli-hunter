@@ -42,15 +42,15 @@ module Hunter
         task = _create_task(request_file)
 
         task.start
-        Hunter::Logger.info("[#{task.id}] task started")
+        Hunter::Logger.info("[#{task.id}] Task started")
 
         sleep(2) until task.stopped?
-        Hunter::Logger.info("[#{task.id}] task finished")
+        Hunter::Logger.info("[#{task.id}] Task finished")
 
         if task.vulnerable?
-          Hunter::Logger.succ("[#{task.id}] task vulnerable, use 'sqlmap -r #{request_file}' to exploit")
+          Hunter::Logger.succ("[#{task.id}] Task vulnerable, use 'sqlmap -r #{request_file}' to exploit")
         else
-          Hunter::Logger.warn("[#{task.id}] all tested parameters appear to be not injectable")
+          Hunter::Logger.warn("[#{task.id}] All tested parameters appear to be not injectable")
         end
       ensure
         task.destroy
@@ -66,7 +66,7 @@ module Hunter
 
       def _create_task(request_file)
         task = Hunter::SQLMAP::Task.new(api_host, api_port)
-        Hunter::Logger.info("[#{task.id}] task created")
+        Hunter::Logger.info("[#{task.id}] Task created")
 
         task.set(requestFile: request_file)
         task.set(options)
