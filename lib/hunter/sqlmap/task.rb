@@ -134,7 +134,7 @@ module Hunter
         result = _send_request(:get, url)
         raise(TaskDataRetrieveError, result['message']) unless result['success']
 
-        result['data'].empty?
+        !result['data'].empty?
       end
 
       private
