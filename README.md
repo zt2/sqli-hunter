@@ -1,13 +1,34 @@
 # SQLi-Hunter
 
-SQLi-Hunter is a simple HTTP proxy server and a sqlmap api wrapper that makes dig SQLi easily.
+SQLi-Hunter is a simple HTTP proxy server and a SQLMAP API wrapper that makes digging SQLi easy.
 
-## 0x0 Requirement
 
-- Ruby
-- SQLMAP
 
-## 0x1 Installation
+## 0x0 Installation
+
+### Using Docker
+
+- Build the Docker image:
+
+```
+docker build -t sqli-hunter https://github.com/zt2/sqli-hunter.git
+```
+
+- Run the Docker image:
+
+```
+docker run -ti -p 8080:8080 -v /tmp:/tmp --rm sqli-hunter -p 8080
+```
+
+The volume argument allows SQLi-Hunter to persist output files to be accessed on the host system. The port mapping argument will enable SQLi-Hunter to start a proxy server to be accessed on the host system.
+
+- Setup proxy in the browser and you are ready to go.
+
+
+
+### From source
+
+- Build from the latest release of the source code:
 
 ```
 git clone https://github.com/sqlmapproject/sqlmap.git
@@ -17,10 +38,25 @@ gem install bundler
 bundler install
 ```
 
-## 0x2 Usage
+- Start SQLMAP API server manually.
 
 ```
-➜  sqli-hunter git:(master) ruby bin/sqli-hunter.rb 
+python sqlmapapi.py -s
+```
+
+- Run SQLi-Hunter
+
+```
+ruby bin/sqli-hunter.rb
+```
+
+- Configure proxy server settings in your browser
+
+
+
+## 0x1 Usage
+
+```
 
   _____ _____ __    _     _____         _
   |   __|     |  |  |_|___|  |  |_ _ ___| |_ ___ ___
@@ -53,19 +89,9 @@ SQLMAP options
         --random-agent               Use randomly selected HTTP User-Agent header value
 ```
 
-start sqlmap api
 
-```
-python sqlmapapi.py -s
-```
 
-run sqli-hunter
-
-```
-ruby bin/sqli-hunter.rb
-```
-
-configure proxy server settings in your browser
+Output:
 
 ```
 ➜  sqli-hunter git:(master) ruby bin/sqli-hunter.rb --targeted-hosts=demo.aisec.cn --threads=15 --random-agent --smart
