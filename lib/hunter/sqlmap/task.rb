@@ -5,6 +5,11 @@
 #
 require 'http'
 
+#
+# Custom libraries
+#
+require_relative '../logger'
+
 module Hunter
   module SQLMAP
     #
@@ -159,8 +164,10 @@ module Hunter
         end
 
         res.parse
-      rescue HTTP::Error => e
-        raise(HTTPError, e.message)
+      rescue HTTP::ConnectionError, HTTP::TimeoutError
+        Hunter::Logger.warn('SQLMAP is busy for now, waiting')
+        sleep(10)
+        retry
       end
     end
   end
