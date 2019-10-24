@@ -24,8 +24,7 @@ sqlmap_options = OpenStruct.new(
   threads: 5
 )
 
-OptionParser.new do |opts|
-  opts.banner = <<BANNER
+puts "
 
   _____ _____ __    _     _____         _
   |   __|     |  |  |_|___|  |  |_ _ ___| |_ ___ ___
@@ -34,9 +33,12 @@ OptionParser.new do |opts|
   |__|
 
       SQLMAP API wrapper by ztz (github.com/zt2)
+      Version: #{Hunter::VERSION}
 
-  Usage: #{$PROGRAM_NAME} [options]
-BANNER
+"
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{$PROGRAM_NAME} [options]"
   opts.separator ''
 
   opts.separator 'Common options:'
@@ -45,7 +47,7 @@ BANNER
     common_options.host = host
   end
 
-  opts.on('-p', '--port=<PORT>', OptionParser::DecimalInteger, 'Bind port for proxy server (default is 8080)') do |port|
+  opts.on('-p', '--port=[PORT]', OptionParser::DecimalInteger, 'Bind port for proxy server (default is 8080)') do |port|
     common_options.port = port
   end
 
