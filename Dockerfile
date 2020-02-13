@@ -17,8 +17,7 @@ RUN wget https://github.com/zt2/sqli-hunter/archive/1.2.0.tar.gz && \
     mv sqli-hunter-1.2.0 sqli-hunter && \
     cd sqli-hunter && \
     gem install bundler && \
-    bundler install && \
-    ln -s /root/sqli-hunter/bin/sqli-hunter.rb /usr/bin/sqli-hunter
+    bundler install
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
