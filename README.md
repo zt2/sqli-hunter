@@ -17,7 +17,7 @@ docker build -t sqli-hunter https://github.com/zt2/sqli-hunter.git
 - Run the Docker image:
 
 ```
-docker run -ti -p 8080:8080 -v /tmp:/tmp --rm sqli-hunter
+docker run -ti -p 8080:8080 -p 8081:8081 -v /tmp:/tmp --rm sqli-hunter
 ```
 
 The volume argument allows SQLi-Hunter to persist output files to be accessed on the host system. The port mapping argument will enable SQLi-Hunter to start a proxy server to be accessed on the host system.
