@@ -122,7 +122,8 @@ opts = {
   bind_host: common_options.host,
   bind_port: common_options.port,
   ca_crt_path: '../cert/sqli-hunter.pem',
-  ca_key_path: '../cert/sqli-hunter.key'
+  ca_key_path: '../cert/sqli-hunter.key',
+  targets: common_options.targeted_hosts
 }
 
 proxy = Hunter::Proxy.new(opts)
