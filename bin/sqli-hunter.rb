@@ -118,6 +118,24 @@ Hunter::SQLMAP.config do |config|
   config.options = sqlmap_options.to_h
 end
 
-proxy = Hunter::Proxy.new(common_options.host, common_options.port)
-at_exit { proxy.shutdown }
-proxy.start
+opts = {
+  bind_host: common_options.host,
+  bind_port: common_options.port,
+  ca_crt_path: '../cert/sqli-hunter.pem',
+  ca_key_path: '../cert/sqli-hunter.key'
+}
+
+proxy = Hunter::Proxy.new(opts)
+
+trap(:TERM) do
+  proxy.shutdown
+  exit
+end
+
+trap(:INT) do
+  proxy.shutdown
+  exit
+end
+
+thread = proxy.start
+thread.join

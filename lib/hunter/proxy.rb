@@ -3,8 +3,7 @@
 #
 # Standard libraries
 #
-require 'tempfile'
-require 'webrick/httpproxy'
+require 'ritm'
 
 #
 # Custom libraries
@@ -18,12 +17,16 @@ module Hunter
   class Proxy
     # Setup a proxy server
     #
-    # @param bind_host [String] Bind host
-    # @param bind_port [Integer] Bind port
-    # @param targeted_hosts [Array<String>] Targeted host
-    def initialize(bind_host, bind_port, targeted_hosts = [])
-      @server = _init_proxy_server(bind_host, bind_port)
-      @targeted_hosts = targeted_hosts
+    # @param opts [Hash]
+    # @option opts [String] :bind_host Bind host
+    # @option opts [Integer] :bind_port Bind port
+    # @option opts [Array<String>] :targets Targets
+    # @option opts [String] :ca_crt_path Path for CA crt
+    # @option opts [String] :ca_key_path Path for CA key
+    def initialize(opts)
+      _init_proxy_server(opts[:bind_host], opts[:bind_port], opts[:ca_crt_path],
+                         opts[:ca_key_path])
+      @targeted_hosts = opts[:targets]
       @targeted_methods = %w[GET POST]
       @ignore_uri = %w[.css .js .jpg .jpeg .gif .png .html .htm .swf]
       @threads = []
@@ -42,10 +45,11 @@ module Hunter
     # Start monitor
     #
     def start
-      bind_addr = "#{@server.config[:BindAddress]}:#{@server.config[:Port]}"
+      conf = Ritm::GLOBAL_SESSION.conf
+      bind_addr = "#{conf.proxy[:bind_address]}:#{conf.proxy[:bind_port]}"
       Hunter::Logger.info("Proxy server started ... listening on #{bind_addr}")
 
-      @server.start
+      Ritm.start
     rescue StandardError => e
       Hunter::Logger.error(e.message)
     end
@@ -54,7 +58,7 @@ module Hunter
     #
     def shutdown
       Hunter::Logger.info('Stopping proxy server')
-      @server.shutdown
+      Ritm.shutdown
       Hunter::Logger.info('Proxy server stopped')
       Hunter::Logger.info("Waiting for #{@threads.size} tasks ...")
       @threads.each(&:join)
@@ -66,16 +70,18 @@ module Hunter
     #
     # @param host [String] Bind host
     # @param port [Integer] Bind port
+    # @param ca_crt_path [String] Path for CA crt
+    # @param ca_key_path [String] Path for CA key
     # @return [WEBrick::HTTPProxyServer] An instance of proxy server
-    def _init_proxy_server(host, port)
-      handler = proc { |req, res| process(req, res) }
-      WEBrick::HTTPProxyServer.new(
-        BindAddress: host,
-        Port: port,
-        ProxyContentHandler: handler,
-        AccessLog: [],
-        Logger: WEBrick::Log.new(Tempfile.new.path, WEBrick::Log::FATAL)
-      )
+    def _init_proxy_server(host, port, ca_crt_path, ca_key_path)
+      Ritm.configure do
+        proxy[:bind_address] = host
+        proxy[:bind_port] = port
+        ssl_reverse_proxy.ca[:pem] = ca_crt_path
+        ssl_reverse_proxy.ca[:key] = ca_key_path
+      end
+
+      Ritm.on_response { |req, res| process(req, res) }
     end
 
     # Decide whether we should ignore this request
