@@ -20,7 +20,8 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
       zeitwerk (~> 2.2)
-    addressable (2.3.7)
+    addressable (2.7.0)
+      public_suffix (>= 2.0.2, < 5.0)
     certificate_authority (0.1.6)
       activemodel (>= 3.0.6)
     concurrent-ruby (1.1.6)
@@ -29,26 +30,33 @@ GEM
     dot_hash (0.5.9)
     faraday (0.17.3)
       multipart-post (>= 1.2, < 3)
+    ffi (1.13.1)
+    ffi-compiler (1.0.1)
+      ffi (>= 1.0.0)
+      rake
     formatador (0.2.5)
-    http (4.1.1)
+    http (4.4.1)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
-      http-form_data (~> 2.0)
-      http_parser.rb (~> 0.6.0)
+      http-form_data (~> 2.2)
+      http-parser (~> 1.2.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    http-form_data (2.1.1)
-    http_parser.rb (0.6.0)
+    http-form_data (2.3.0)
+    http-parser (1.2.1)
+      ffi-compiler (>= 1.0, < 2.0)
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
     minitest (5.14.0)
     multipart-post (2.1.1)
+    public_suffix (4.0.6)
+    rake (13.0.1)
     thread_safe (0.3.6)
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.6)
+    unf_ext (0.0.7.7)
     webrick (1.6.0)
     zeitwerk (2.2.2)
 
@@ -57,8 +65,8 @@ PLATFORMS
 
 DEPENDENCIES
   formatador (~> 0.2.5)
-  http (~> 4.1, >= 4.1.1)
+  http (~> 4.4, >= 4.4.1)
   ritm (= 1.0.3)!
 
 BUNDLED WITH
-   2.1.2
+   2.1.4
