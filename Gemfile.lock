@@ -12,14 +12,13 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (6.0.3.2)
-      activesupport (= 6.0.3.2)
-    activesupport (6.0.3.2)
+    activemodel (5.2.4.4)
+      activesupport (= 5.2.4.4)
+    activesupport (5.2.4.4)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-      zeitwerk (~> 2.2, >= 2.2.2)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     certificate_authority (0.1.6)
@@ -57,8 +56,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.7)
-    webrick (1.6.0)
-    zeitwerk (2.4.0)
+    webrick (1.6.1)
 
 PLATFORMS
   ruby
@@ -69,4 +67,4 @@ DEPENDENCIES
   ritm (= 1.0.3)!
 
 BUNDLED WITH
-   2.1.4
+   1.17.3
