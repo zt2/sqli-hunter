@@ -57,7 +57,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.7)
-    webrick (1.6.0)
+    webrick (1.8.1)
     zeitwerk (2.4.0)
 
 PLATFORMS
