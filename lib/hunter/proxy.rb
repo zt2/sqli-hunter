@@ -9,7 +9,7 @@ require 'bundler'
 Bundler.setup
 
 require 'ritm'
-
+require 'concurrent-ruby'
 #
 # Custom libraries
 #
@@ -34,7 +34,7 @@ module Hunter
       @targeted_hosts = opts[:targets]
       @targeted_methods = %w[GET POST]
       @ignore_uri = %w[.css .js .jpg .jpeg .gif .png .html .htm .swf]
-      @threads = []
+      @thread_pool = Concurrent::FixedThreadPool.new(10)
     end
 
     # Process HTTP request and response
@@ -44,7 +44,10 @@ module Hunter
     def process(req, res)
       return if _ignore?(req, res)
 
-      @threads << Thread.new { Hunter::SQLMAP.run(req) }
+    @thread_pool.post do
+      Hunter::SQLMAP.run(req)
+      Hunter::Logger.info("Completed processing request: #{req.request_method} #{req.request_uri}")
+      end
     end
 
     # Start monitor
@@ -62,6 +65,11 @@ module Hunter
     # Shutdown server
     #
     def shutdown
+      Hunter::Logger.info('Shutting down thread pool')
+      @thread_pool.shutdown
+      @thread_pool.wait_for_termination
+      Hunter::Logger.info('Thread pool shut down.')
+      
       Hunter::Logger.info('Stopping proxy server')
       Ritm.shutdown
       Hunter::Logger.info('Proxy server stopped')
